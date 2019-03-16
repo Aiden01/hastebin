@@ -15,6 +15,8 @@ import           Data.Text               hiding ( concat
 import           Logger
 import           System.Directory               ( doesFileExist )
 import qualified Data.ByteString.Char8         as B
+import           Web.Browser                    ( openBrowser )
+
 
 
 
@@ -49,22 +51,27 @@ uploadFile buffer = do
   return (body ! "key" ^? _String)
 
 
+-- Opens the browser
+open :: String -> IO Bool
+open uid = openBrowser $ endpoint ++ uid
+
 
 run :: App.Cli -> IO ()
-run (App.Cli file q) = do
+run (App.Cli file) = do
   fileExists <- doesFileExist file
   if fileExists
     then do
       contents <- readFile file
       body     <- uploadFile contents
       case body of
-        Nothing  -> error' q "An error occurred"
-        Just key -> success'
-          q
-          (  "The file has been uploaded successfully. Url: "
-          ++ endpoint
-          ++ unpack key
-          )
-    else error' q ("File " ++ file ++ "does not exist")
+        Nothing  -> error' "An error occurred"
+        Just key -> do
+          open $ unpack key
+          success'
+            (  "The file has been uploaded successfully. Url: "
+            ++ endpoint
+            ++ unpack key
+            )
+    else error' ("File " ++ file ++ "does not exist")
 
 run _ = return ()

@@ -73,6 +73,7 @@ executable hastebin-cli
                        , text-ansi
                        , directory
                        , bytestring
+                       , open-browser
   -- Directories containing source files.
   hs-source-dirs:      src
 
