@@ -26,8 +26,10 @@ main = run =<< execParser opts
  where
   opts = info
     (App.initCLI <**> helper)
-    (fullDesc <> progDesc "A CLI for hastebin written in Haskell" <> header
-      "hastebin-cli - Upload file from your command line directly to hastebin"
+    (  fullDesc
+    <> progDesc "A CLI for hastebin written in Haskell"
+    <> header
+         "hastebin-cli - Upload files from your command line directly to hastebin"
     )
 
 
