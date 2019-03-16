@@ -14,6 +14,7 @@ import           Data.Text               hiding ( concat
                                                 )
 import           Logger
 import           System.Directory               ( doesFileExist )
+import qualified Data.ByteString.Char8         as B
 
 
 
@@ -40,7 +41,7 @@ endpoint = "https://hastebin.com/"
 uploadFile :: String -> IO (Maybe Text)
 uploadFile buffer = do
   response <-
-    Http.asJSON =<< Http.post (endpoint ++ "documents") (toJSON buffer) :: IO
+    Http.asJSON =<< Http.post (endpoint ++ "documents") (B.pack buffer) :: IO
       Resp
   let body = response ^. Http.responseBody
   return (body ! "key" ^? _String)
