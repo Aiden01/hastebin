@@ -9,10 +9,13 @@ import           Data.Text                      ( unpack
                                                 , pack
                                                 )
 
-error' :: String -> IO ()
-error' = putStrLn . unpack . red . pack
+error' :: Bool -> String -> IO ()
+error' True _   = return ()
+error' _    str = putStrLn $ unpack $ red $ pack str
 
-success' :: String -> IO ()
-success' = putStrLn . unpack . green . pack
+success' :: Bool -> String -> IO ()
+success' True _   = return ()
+success' _    str = putStrLn $ unpack $ green $ pack str
+
 
 

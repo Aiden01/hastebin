@@ -9,19 +9,13 @@ import           Data.Semigroup                 ( (<>) )
 
 
 data Cli = Cli
-  { file :: String, lines :: Int }
+  { file :: String, quiet :: Bool }
 
 
 
 
 initCLI :: Parser Cli
-initCLI = Cli <$> argument str (metavar "FILE") <*> option
-  auto
-  (  long "lines"
-  <> help "Number of lines to take"
-  <> showDefault
-  <> value 350
-  <> metavar "INT"
-  )
+initCLI = Cli <$> argument str (metavar "FILE") <*> switch
+  (long "quiet" <> short 'q' <> help "Whether to show the logs")
 
 

@@ -37,33 +37,31 @@ endpoint = "https://hastebin.com/"
 
 
 -- Uploads the file to hastebin
-uploadFile :: IO [String] -> IO (Maybe Text)
+uploadFile :: String -> IO (Maybe Text)
 uploadFile buffer = do
-  contents <- concat <$> buffer
   response <-
-    Http.asJSON =<< Http.post (endpoint ++ "documents") (toJSON contents) :: IO
+    Http.asJSON =<< Http.post (endpoint ++ "documents") (toJSON buffer) :: IO
       Resp
   let body = response ^. Http.responseBody
   return (body ! "key" ^? _String)
 
 
--- Reads the file and returns its content
-getFileContents :: String -> Int -> IO [String]
-getFileContents path n = take n . lines <$> readFile path
 
 run :: App.Cli -> IO ()
-run (App.Cli file n) = do
+run (App.Cli file q) = do
   fileExists <- doesFileExist file
   if fileExists
     then do
-      body <- uploadFile $ getFileContents file n
+      contents <- readFile file
+      body     <- uploadFile contents
       case body of
-        Nothing -> error' "An error occurred"
-        Just key ->
-          success'
-            $  "The file has been uploaded successfully. Url: "
-            ++ endpoint
-            ++ unpack key
-    else error' $ "File " ++ file ++ "does not exist"
+        Nothing  -> error' q "An error occurred"
+        Just key -> success'
+          q
+          (  "The file has been uploaded successfully. Url: "
+          ++ endpoint
+          ++ unpack key
+          )
+    else error' q ("File " ++ file ++ "does not exist")
 
 run _ = return ()
