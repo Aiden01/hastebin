@@ -43,6 +43,8 @@ maintainer:          liangu@protonmail.com
 -- category:
 
 build-type:          Simple
+homepage:            https://github.com/Aiden01/hastebin
+description:         A simple CLI for hastebin
 
 -- Extra files to be distributed with the package, such as examples or a
 -- README.
