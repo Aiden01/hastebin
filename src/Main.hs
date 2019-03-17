@@ -1,3 +1,5 @@
+{-# LANGUAGE LambdaCase #-}
+
 module Main where
 
 import           Options.Applicative
@@ -16,6 +18,9 @@ import           Logger
 import           System.Directory               ( doesFileExist )
 import qualified Data.ByteString.Char8         as B
 import           Web.Browser                    ( openBrowser )
+import           Control.Monad                  ( guard )
+
+
 
 
 
@@ -56,22 +61,18 @@ open :: String -> IO Bool
 open uid = openBrowser $ endpoint ++ uid
 
 
+
+
 run :: App.Cli -> IO ()
 run (App.Cli file) = do
-  fileExists <- doesFileExist file
-  if fileExists
-    then do
-      contents <- readFile file
-      body     <- uploadFile contents
-      case body of
-        Nothing  -> error' "An error occurred"
-        Just key -> do
-          open $ unpack key
-          success'
-            (  "The file has been uploaded successfully. Url: "
-            ++ endpoint
-            ++ unpack key
-            )
-    else error' ("File " ++ file ++ "does not exist")
-
+  guard =<< doesFileExist file
+  readFile file >>= uploadFile >>= \case
+    Nothing  -> error' "An error occured"
+    Just key -> open $ unpack
+      key
+      success'
+      (  "The file has been uploaded successfully. Url: "
+      ++ endpoint
+      ++ unpack key
+      )
 run _ = return ()
