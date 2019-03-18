@@ -67,7 +67,7 @@ run :: App.Cli -> IO ()
 run (App.Cli file) = do
   guard =<< doesFileExist file
   readFile file >>= uploadFile >>= \case
-    Nothing  -> error' "An error occured"
+    Nothing  -> error' "An error occurred"
     Just key -> open $ unpack
       key
       success'
